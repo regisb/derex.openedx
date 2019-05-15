@@ -9,7 +9,7 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip
-    pip install git+https://github.com/Abstract-Tech/derex.builder.git
+    pip install git+https://github.com/Abstract-Tech/derex.builder.git@silviot
   displayName: 'Install derex.builder'
 
 - script: |
