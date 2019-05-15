@@ -11,6 +11,20 @@ steps:
     displayName: 'Pull Buildah image'
 
   - script: |
+      set -ex
+      docker run \
+        --rm --privileged --security-opt="seccomp=unconfined" \
+        --cap-add=ALL \
+        -v /var/lib/containers/:/var/lib/containers/:rw,Z \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v ${PWD}:${PWD} \
+        derex/buildah \
+        bash -c "
+          mkdir ${PWD}/cache
+          cp -av \$(buildah mount \$(buildah from derex/wheelhouse:latest))/wheelhouse ${PWD}/cache/wheels"
+    displayName: 'Put wheels cache in place'
+
+  - script: |
       set -x
       set -e
       docker run \
@@ -28,5 +42,7 @@ steps:
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install .
-          derex.builder resolve derex/openedx/wheels"
+          export WHEELS_CACHE=${PWD}/cache/wheels
+          derex.builder resolve derex/openedx/wheels
+          chown $(id -u) -R cache/wheels"
     displayName: 'Install derex.builder and build images'
