@@ -28,4 +28,4 @@ steps:
           python3 -m pip install --upgrade pip
           pip3 install git+https://github.com/Abstract-Tech/derex.builder.git@silviot
           derex.builder resolve wheels"
-    displayName: 'Install derex.builder'
+    displayName: 'Install derex.builder and build images'
