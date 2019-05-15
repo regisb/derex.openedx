@@ -26,6 +26,7 @@ steps:
           cd ${PWD}
           mkdir -p ${PWD}/cache/pip
           python3 -m pip install --upgrade pip
-          pip3 install . -r requirements.txt
+          pip3 install -r requirements.txt
+          pip3 install .
           derex.builder resolve derex/openedx/wheels"
     displayName: 'Install derex.builder and build images'
