@@ -7,6 +7,9 @@ steps:
       versionSpec: '3.7'
     displayName: 'Use Python 3.7'
 
+  - script: docker pull derex/buildah
+    displayName: 'Pull Buildah image'
+
   - script: |
       set -x
       set -e
@@ -22,7 +25,7 @@ steps:
           set -e
           cd ${PWD}
           mkdir -p ${PWD}/cache/pip
-          python -m pip install --upgrade pip
-          pip install git+https://github.com/Abstract-Tech/derex.builder.git@silviot
+          python3 -m pip install --upgrade pip
+          pip3 install git+https://github.com/Abstract-Tech/derex.builder.git@silviot
           derex.builder resolve wheels"
     displayName: 'Install derex.builder'
