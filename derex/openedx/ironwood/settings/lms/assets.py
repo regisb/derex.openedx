@@ -1,10 +1,9 @@
 """
 Bare minimum settings for collecting production assets.
 """
-# type: ignore
-from ..common import *
 from openedx.core.lib.derived import derive_settings
 
+from ..common import *
 
 COMPREHENSIVE_THEME_DIRS.append("/openedx/themes")
 STATIC_ROOT_BASE = "/openedx/staticfiles"

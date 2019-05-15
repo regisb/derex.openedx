@@ -2,12 +2,12 @@
 Bare minimum settings for collecting production assets.
 """
 
-from ..common import *  # type: ignore
+import os
+
 from openedx.core.lib.derived import derive_settings
 from path import Path as path
 
-import os
-
+from ..common import *  # type: ignore
 
 COMPREHENSIVE_THEME_DIRS.append("/openedx/themes")  # type: ignore
 STATIC_ROOT_BASE = "/openedx/staticfiles"
