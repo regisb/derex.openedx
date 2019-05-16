@@ -10,9 +10,7 @@ steps:
   - script: docker pull derex/buildah
     displayName: 'Pull Buildah image'
 
-  - script: |
-      echo docker run --rm -v ${PWD}/cache/wheels:/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
-      docker run --rm -v ${PWD}/cache/wheels:/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
+  - script: docker run --rm -v ${PWD}/.cache/wheelhouse:/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
     displayName: 'Put wheels cache in place'
 
   - script: |
@@ -29,11 +27,29 @@ steps:
           set -x
           set -e
           cd ${PWD}
-          mkdir -p ${PWD}/cache/pip
+          mkdir -p ${PWD}/.cache/pip
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install .
-          export WHEELS_CACHE=${PWD}/cache/wheels
-          derex.builder resolve derex/openedx/wheels
-          chown $(id -u) -R cache/wheels"
+          export WHEELS_CACHE=${PWD}/.cache/wheels
+          derex.builder resolve derex/openedx/wheels"
     displayName: 'Install derex.builder and build images'
+
+  - script: |
+      docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+    displayName: 'Log into docker registry'
+    env:
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
+
+  - script: |
+      BEFORE=$(docker run --rm derex/wheelhouse:latest du /wheelhouse -s|cut -f1)
+      AFTER=$(du .cache/wheelhouse -s|cut -f1)
+      echo Current wheel house image is ${BEFORE} bytes. Now we have ${AFTER} bytes in the wheel cache.
+      # Only act if we have at least one more Mb worth of wheels
+      if  [ "${AFTER}" -gt "$((${BEFORE}+1000))" ]; then
+          echo "${AFTER} is greater than ${BEFORE} plus one thousand";
+      fi;
+      docker build .cache -t derex/wheelhouse:latest
+      docker push derex/wheelhouse:latest
+    displayName: 'Build and push wheels image if necessary'
