@@ -11,17 +11,8 @@ steps:
     displayName: 'Pull Buildah image'
 
   - script: |
-      set -ex
-      docker run \
-        --rm --privileged --security-opt="seccomp=unconfined" \
-        --cap-add=ALL \
-        -v /var/lib/containers/:/var/lib/containers/:rw,Z \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v ${PWD}:${PWD} \
-        derex/buildah \
-        bash -c "
-          mkdir ${PWD}/cache
-          cp -av \$(buildah mount \$(buildah from derex/wheelhouse:latest))/wheelhouse ${PWD}/cache/wheels"
+      echo docker run --rm -v ${PWD}/cache/wheels:/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
+      docker run --rm -v ${PWD}/cache/wheels:/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
     displayName: 'Put wheels cache in place'
 
   - script: |
