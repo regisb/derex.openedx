@@ -1,11 +1,16 @@
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  - group: Docker credentials
+
 steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.7'
-    displayName: 'Use Python 3.7'
+  - script: |
+      docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+    displayName: 'Log into docker registry'
+    env:
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
 
   - script: docker pull derex/buildah
     displayName: 'Pull Buildah image'
@@ -34,13 +39,6 @@ steps:
           export WHEELS_CACHE=${PWD}/.cache/wheels
           derex.builder resolve derex/openedx/wheels"
     displayName: 'Install derex.builder and build images'
-
-  - script: |
-      docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-    displayName: 'Log into docker registry'
-    env:
-      DOCKER_USERNAME: $(DOCKER_USERNAME)
-      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
 
   - script: |
       BEFORE=$(docker run --rm derex/wheelhouse:latest du /wheelhouse -s|cut -f1)
