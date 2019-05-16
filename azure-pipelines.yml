@@ -75,8 +75,8 @@ steps:
       echo Current wheel house image is ${BEFORE} bytes. Now we have ${AFTER} bytes in the wheel cache.
       # Only act if we have at least one more Mb worth of wheels
       if  [ "${AFTER}" -gt "$((${BEFORE}+1000))" ]; then
-          echo "${AFTER} is greater than ${BEFORE} plus one thousand";
+        echo "${AFTER} is greater than ${BEFORE} plus one thousand";
+        docker build .cache -t derex/wheelhouse:latest
+        docker push derex/wheelhouse:latest
       fi;
-      docker build .cache -t derex/wheelhouse:latest
-      docker push derex/wheelhouse:latest
     displayName: 'Build and push wheels image if necessary'
