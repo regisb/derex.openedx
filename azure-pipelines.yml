@@ -62,7 +62,8 @@ steps:
           sudo buildah push \$(derex.builder image derex/openedx/base)
           sudo buildah push \$(derex.builder image derex/openedx/wheels)
           sudo buildah push \$(derex.builder image derex/openedx/buildwheels)
-          sudo buildah push \$(derex.builder image derex/openedx/ironwood)"
+          sudo buildah push \$(derex.builder image derex/openedx/ironwood)
+          echo \"##vso[task.setvariable variable=LATEST_IMAGE]\$(derex.builder image derex/openedx/ironwood)\""
     displayName: 'Push built docker images'
 
   - script: |
@@ -72,9 +73,10 @@ steps:
         --cap-add=ALL \
         -v /var/lib/containers/:/var/lib/containers/:rw,Z \
         --mount "type=bind,source=$HOME/.docker,target=/root/.docker" \
+        --env "LATEST_IMAGE=$LATEST_IMAGE" \
         derex/buildah \
         bash -c "
-          sudo buildah tag \$(derex.builder image derex/openedx/ironwood) derex/openedx-ironwood:latest
+          sudo buildah tag $LATEST_IMAGE derex/openedx-ironwood:latest
           sudo buildah push derex/openedx-ironwood:latest"
     displayName: Push tag :latest
     condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
