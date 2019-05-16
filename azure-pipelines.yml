@@ -15,8 +15,10 @@ steps:
   - script: docker pull derex/buildah
     displayName: 'Pull Buildah image'
 
-  - script: |  # For some reason the following does not work if put on this line
-      docker run --rm -v ${PWD}/.cache/wheelhouse:/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
+  - script: |
+      pwd
+      mkdir .cache/wheelhouse
+      docker run --rm --mount type=bind,source=${PWD}/.cache/wheelhouse,target=/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
     displayName: 'Put wheels cache in place'
 
   - script: |
