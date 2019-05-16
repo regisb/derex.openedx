@@ -79,7 +79,7 @@ steps:
           sudo buildah tag $LATEST_IMAGE derex/openedx-ironwood:latest
           sudo buildah push derex/openedx-ironwood:latest"
     displayName: Push tag :latest
-    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - script: |
       BEFORE=$(docker run --rm derex/wheelhouse:latest du /wheelhouse -s|cut -f1)
