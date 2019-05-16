@@ -39,8 +39,8 @@ steps:
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install .
-          export WHEELS_CACHE=${PWD}/.cache/wheels
-          derex.builder resolve derex/openedx/ironwood"
+          export WHEELS_CACHE=${PWD}/.cache/wheelhouse
+          derex.builder resolve derex/openedx/ironwood -v DEBUG"
     displayName: 'Install derex.builder and build images'
 
   - script: |
