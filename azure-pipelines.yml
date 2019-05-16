@@ -38,8 +38,28 @@ steps:
           pip3 install -r requirements.txt
           pip3 install .
           export WHEELS_CACHE=${PWD}/.cache/wheels
-          derex.builder resolve derex/openedx/wheels"
+          derex.builder resolve derex/openedx/ironwood"
     displayName: 'Install derex.builder and build images'
+
+  - script: |
+      set -x
+      set -e
+      docker run \
+        --rm --privileged --security-opt="seccomp=unconfined" \
+        --cap-add=ALL \
+        -v /var/lib/containers/:/var/lib/containers/:rw,Z \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v ${PWD}:${PWD} \
+        derex/buildah \
+        bash -c "
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+          pip3 install .
+          sudo buildah push $(derex.builder image derex/openedx/base)
+          sudo buildah push $(derex.builder image derex/openedx/wheels)
+          sudo buildah push $(derex.builder image derex/openedx/buildwheels)
+          sudo buildah push $(derex.builder image derex/openedx/ironwood)"
+    displayName: 'Push built docker images'
 
   - script: |
       BEFORE=$(docker run --rm derex/wheelhouse:latest du /wheelhouse -s|cut -f1)
