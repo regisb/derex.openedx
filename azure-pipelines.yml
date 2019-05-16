@@ -17,8 +17,8 @@ steps:
 
   - script: |
       pwd
-      mkdir .cache/wheelhouse
-      docker run --rm --mount type=bind,source=${PWD}/.cache/wheelhouse,target=/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
+      mkdir .cache/wheels_cache
+      docker run --rm --mount type=bind,source=${PWD}/.cache/wheels_cache,target=/dest derex/wheelhouse sh -c "cp -v /wheelhouse/*.whl /dest/; chown $(id -u):$(id -g) /dest/ -R"
     displayName: 'Put wheels cache in place'
 
   - script: |
@@ -41,11 +41,11 @@ steps:
           pip3 install .
           # Sometimes azure has a colon in ${PWD}. Buildah does not like it.
           # Also, Buildah only accepts absolute paths. So we temporarily
-          # move wheelhouse to the root.
-          mv '${PWD}/.cache/wheelhouse' /
-          export WHEELS_CACHE=/wheelhouse
+          # move wheels_cache to the root.
+          cp '${PWD}/.cache/wheels_cache/*' /
+          export WHEELS_CACHE=/wheels_cache
           derex.builder resolve derex/openedx/ironwood -v DEBUG
-          mv /wheelhouse '${PWD}/.cache/'"
+          cp /wheels_cache/* '${PWD}/.cache/wheels_cache/'"
     displayName: 'Install derex.builder and build images'
 
   - script: |
@@ -71,7 +71,7 @@ steps:
 
   - script: |
       BEFORE=$(docker run --rm derex/wheelhouse:latest du /wheelhouse -s|cut -f1)
-      AFTER=$(du .cache/wheelhouse -s|cut -f1)
+      AFTER=$(du .cache/wheels_cache -s|cut -f1)
       echo Current wheel house image is ${BEFORE} bytes. Now we have ${AFTER} bytes in the wheel cache.
       # Only act if we have at least one more Mb worth of wheels
       if  [ "${AFTER}" -gt "$((${BEFORE}+1000))" ]; then

@@ -1,2 +1,2 @@
 FROM alpine:3.7
-COPY wheelhouse /wheelhouse
+COPY wheels_cache /wheels_cache
