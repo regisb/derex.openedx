@@ -35,14 +35,13 @@ steps:
           set -x
           set -e
           cd ${PWD}
-          mkdir -p ${PWD}/.cache/pip
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install .
           # Sometimes azure has a colon in ${PWD}. Buildah does not like it.
           # Also, Buildah only accepts absolute paths. So we temporarily
           # move wheels_cache to the root.
-          cp '${PWD}/.cache/wheels_cache/*' /
+          cp -r '${PWD}/.cache/wheels_cache' /
           export WHEELS_CACHE=/wheels_cache
           derex.builder resolve derex/openedx/ironwood -v DEBUG
           cp /wheels_cache/* '${PWD}/.cache/wheels_cache/'"
