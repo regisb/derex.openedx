@@ -8,6 +8,12 @@ source:
 copy:
   assets.py: /tmp
   openedx-assets: /tmp/
+  entrypoint.sh: /entrypoint.sh
+
+config:
+  entrypoint: '["/entrypoint.sh"]'
+  workingdir: /openedx/edx-platform
+
 scripts:
   - install_openedx.sh
   - compile_assets.sh
