@@ -51,7 +51,6 @@ steps:
         --rm --privileged --security-opt="seccomp=unconfined" \
         --cap-add=ALL \
         -v /var/lib/containers/:/var/lib/containers/:rw,Z \
-        -v /var/run/docker.sock:/var/run/docker.sock \
         --mount type=bind,source=${PWD},target=${PWD} \
         --mount "type=bind,source=$HOME/.docker,target=/root/.docker" \
         derex/buildah \
