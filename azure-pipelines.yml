@@ -39,8 +39,13 @@ steps:
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install .
-          export WHEELS_CACHE=${PWD}/.cache/wheelhouse
-          derex.builder resolve derex/openedx/ironwood -v DEBUG"
+          # Sometimes azure has a colon in ${PWD}. Buildah does not like it.
+          # Also, Buildah only accepts absolute paths. So we temporarily
+          # move wheelhouse to the root.
+          mv '${PWD}/.cache/wheelhouse' /
+          export WHEELS_CACHE=/wheelhouse
+          derex.builder resolve derex/openedx/ironwood -v DEBUG
+          mv /wheelhouse '${PWD}/.cache/'"
     displayName: 'Install derex.builder and build images'
 
   - script: |
