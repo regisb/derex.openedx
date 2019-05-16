@@ -67,6 +67,20 @@ steps:
     displayName: 'Push built docker images'
 
   - script: |
+      set -ex
+      docker run \
+        --rm --privileged --security-opt="seccomp=unconfined" \
+        --cap-add=ALL \
+        -v /var/lib/containers/:/var/lib/containers/:rw,Z \
+        --mount "type=bind,source=$HOME/.docker,target=/root/.docker" \
+        derex/buildah \
+        bash -c "
+          sudo buildah tag \$(derex.builder image derex/openedx/ironwood) derex/openedx-ironwood:latest
+          sudo buildah push derex/openedx-ironwood:latest"
+    displayName: Push tag :latest
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+  - script: |
       BEFORE=$(docker run --rm derex/wheelhouse:latest du /wheelhouse -s|cut -f1)
       AFTER=$(du .cache/wheels_cache -s|cut -f1)
       echo Current wheel house image is ${BEFORE} bytes. Now we have ${AFTER} bytes in the wheel cache.
