@@ -11,8 +11,14 @@ copy:
   entrypoint.sh: /entrypoint.sh
 
 config:
+  cmd: gunicorn --name ${SERVICE_VARIANT} --bind=0.0.0.0:8000 --max-requests=1000 ${SERVICE_VARIANT}.wsgi:application
   entrypoint: '["/entrypoint.sh"]'
   workingdir: /openedx/edx-platform
+  env:
+    CONFIG_ROOT: /openedx/config
+    PATH: /openedx/bin:${PATH}
+    SERVICE_VARIANT: lms
+    SETTINGS: derex
 
 scripts:
   - install_openedx.sh
