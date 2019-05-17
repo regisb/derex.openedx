@@ -77,8 +77,9 @@ steps:
         --env "LATEST_IMAGE=$LATEST_IMAGE" \
         derex/buildah \
         bash -c "
+          set -ex
           sudo buildah tag $LATEST_IMAGE derex/openedx-ironwood:latest
-          sudo buildah push derex/openedx-ironwood:latest"
+          sudo buildah push derex/openedx-ironwood:latest || true"
     displayName: Push tag :latest
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
