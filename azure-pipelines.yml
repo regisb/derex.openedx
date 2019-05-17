@@ -67,22 +67,6 @@ steps:
           echo \"##vso[task.setvariable variable=LATEST_IMAGE]\$(derex.builder image derex/openedx/ironwood-tutor)\""
     displayName: 'Push built docker images'
 
-  - script: |
-      set -ex
-      docker run \
-        --rm --privileged --security-opt="seccomp=unconfined" \
-        --cap-add=ALL \
-        -v /var/lib/containers/:/var/lib/containers/:rw,Z \
-        --mount "type=bind,source=$HOME/.docker,target=/root/.docker" \
-        --env "LATEST_IMAGE=$LATEST_IMAGE" \
-        derex/buildah \
-        bash -c "
-          set -ex
-          sudo buildah tag $LATEST_IMAGE derex/openedx-ironwood:latest
-          sudo buildah push derex/openedx-ironwood:latest || true"
-    displayName: Push tag :latest
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.6'
