@@ -86,7 +86,7 @@ steps:
       tutor local databases
       docker exec tutor_local_mysql_1 bash -c "echo -e '[mysqldump]\nuser=root\npassword='$(cat $(tutor config printroot)/config.yml |grep MYSQL_ROOT_PASS|awk '{print $2}')>  ~/.my.cnf"
       docker exec tutor_local_mysql_1 mysqldump --all-databases |xz > mysql_dump.xz
-      tutor local start
+      tutor local start  --detach
       sleep 20
       tutor local logs
       curl localhost
