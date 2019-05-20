@@ -61,10 +61,7 @@ steps:
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install .
-          sudo buildah push \$(derex.builder image derex/openedx/base)
-          sudo buildah push \$(derex.builder image derex/openedx/wheels)
-          sudo buildah push \$(derex.builder image derex/openedx/buildwheels)
-          sudo buildah push \$(derex.builder image derex/openedx/ironwood)
+          sudo buildah images
           sudo buildah push \$(derex.builder image derex/openedx/ironwood-tutor)
           echo \"##vso[task.setvariable variable=LATEST_IMAGE]\$(derex.builder image derex/openedx/ironwood-tutor)\""
     displayName: 'Push built docker images'
