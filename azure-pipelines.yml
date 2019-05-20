@@ -43,7 +43,7 @@ steps:
           export WHEELS_CACHE=/wheels_cache
           derex.builder resolve derex/openedx/ironwood -v DEBUG
           derex.builder resolve derex/openedx/ironwood-tutor -v DEBUG
-          ([ -d /wheels_cache ] && cp /wheels_cache/* '${PWD}/.cache/wheels_cache/') || true"
+          cp /wheels_cache/* '${PWD}/.cache/wheels_cache/' || true"
     displayName: 'Install derex.builder and build images'
 
   - script: |
