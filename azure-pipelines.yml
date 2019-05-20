@@ -3,6 +3,7 @@ pool:
 
 variables:
   - group: Docker credentials
+  - group: Transifex credentials
 
 steps:
   - script: |
@@ -11,6 +12,8 @@ steps:
     env:
       DOCKER_USERNAME: $(DOCKER_USERNAME)
       DOCKER_PASSWORD: $(DOCKER_PASSWORD)
+      TRANSIFEX_USERNAME: $(TRANSIFEX_USERNAME)
+      TRANSIFEX_PASSWORD: $(TRANSIFEX_PASSWORD)
 
   - script: docker pull derex/buildah
     displayName: 'Pull Buildah image'
@@ -93,6 +96,26 @@ steps:
     inputs:
       artifactName: 'Mysql dump'
       targetPath: 'mysql_dump.xz'
+
+  - script: |
+      set -ex
+      docker exec tutor_local_lms_1 bash -c "echo -e '[https://www.transifex.com]\nhostname=https://www.transifex.com\nusername=${TRANSIFEX_USERNAME}\npassword=${TRANSIFEX_PASSWORD}' >  ~/.transifexrc"
+
+      i18n_tool transifex pull
+      i18n_tool extract
+
+      for file in ( "django-partial.po" "djangojs-partial.po" )
+      do
+              sed -i -e "s/nplurals=INTEGER/nplurals=2/" "conf/locale/en/LC_MESSAGES/$file"
+              sed -i -e "s/plural=EXPRESSION/plural=\(n != 1\)/" "conf/locale/en/LC_MESSAGES/$file"
+      done
+
+      i18n_tool generate --strict
+      python manage.py lms compilemessages -v2
+      python manage.py lms compilejsi18n -v2
+      i18n_tool validate
+
+    displayName: 'Download and compile updated translations from Transifex for LMS'
 
   - script: |
       set -ex
