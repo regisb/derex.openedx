@@ -64,7 +64,7 @@ steps:
           sudo buildah images
           sudo buildah push \$(derex.builder image derex/openedx/ironwood-tutor)
           LATEST_IMAGE=\$(derex.builder image derex/openedx/ironwood-tutor)
-          echo '##vso[task.setvariable variable=LATEST_IMAGE]'\$LATEST_IMAGE
+          echo '#''#vso[task.setvariable variable=LATEST_IMAGE]'\$LATEST_IMAGE
           echo Made variable LATEST_IMAGE available for the following tasks. Value is \$LATEST_IMAGE"
     displayName: 'Push built docker images'
 
