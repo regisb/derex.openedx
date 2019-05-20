@@ -99,22 +99,22 @@ steps:
 
   - script: |
       set -ex
-      docker exec tutor_local_lms_1 bash -c "echo -e '[https://www.transifex.com]\nhostname=https://www.transifex.com\nusername=${TRANSIFEX_USERNAME}\npassword=${TRANSIFEX_PASSWORD}' >  ~/.transifexrc"
+      docker-compose -f $(tutor config printroot)/env/local/docker-compose.yml run lms bash -c "echo -e '[https://www.transifex.com]\nhostname=https://www.transifex.com\nusername=${TRANSIFEX_USERNAME}\npassword=${TRANSIFEX_PASSWORD}' >  ~/.transifexrc"
+      docker-compose -f $(tutor config printroot)/env/local/docker-compose.yml run lms bash -c "
+        set -ex
+        i18n_tool transifex pull
+        i18n_tool extract
 
-      i18n_tool transifex pull
-      i18n_tool extract
+        for file in ( "django-partial.po" "djangojs-partial.po" )
+        do
+                sed -i -e "s/nplurals=INTEGER/nplurals=2/" "conf/locale/en/LC_MESSAGES/$file"
+                sed -i -e "s/plural=EXPRESSION/plural=\(n != 1\)/" "conf/locale/en/LC_MESSAGES/$file"
+        done
 
-      for file in ( "django-partial.po" "djangojs-partial.po" )
-      do
-              sed -i -e "s/nplurals=INTEGER/nplurals=2/" "conf/locale/en/LC_MESSAGES/$file"
-              sed -i -e "s/plural=EXPRESSION/plural=\(n != 1\)/" "conf/locale/en/LC_MESSAGES/$file"
-      done
-
-      i18n_tool generate --strict
-      python manage.py lms compilemessages -v2
-      python manage.py lms compilejsi18n -v2
-      i18n_tool validate
-
+        i18n_tool generate --strict
+        python manage.py lms compilemessages -v2
+        python manage.py lms compilejsi18n -v2
+        i18n_tool validate"
     displayName: 'Download and compile updated translations from Transifex for LMS'
 
   - script: |
