@@ -86,11 +86,7 @@ steps:
       tutor local databases
       docker exec tutor_local_mysql_1 bash -c "echo -e '[mysqldump]\nuser=root\npassword='$(cat $(tutor config printroot)/config.yml |grep MYSQL_ROOT_PASS|awk '{print $2}')>  ~/.my.cnf"
       docker exec tutor_local_mysql_1 mysqldump --all-databases |xz > mysql_dump.xz
-      tutor local start  --detach
-      sleep 20
       tutor local logs
-      curl localhost
-      curl studio.localhost
     displayName: 'Try out the built image using tutor'
 
   - task: PublishPipelineArtifact@0
@@ -102,8 +98,6 @@ steps:
       set -ex
       tutor local importdemocourse
       docker exec tutor_local_mysql_1 mysqldump --all-databases |xz > mysql_dump_demo.xz
-      curl localhost
-      curl studio.localhost
     displayName: 'Generate demo database'
 
   - task: PublishPipelineArtifact@0
