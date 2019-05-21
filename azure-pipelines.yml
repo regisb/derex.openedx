@@ -89,7 +89,7 @@ steps:
       tutor local logs
     displayName: 'Try out the built image using tutor'
 
-  - task: PublishPipelineArtifact@0
+  - task: PublishBuildArtifacts@1
     inputs:
       artifactName: 'Mysql dump'
       targetPath: 'mysql_dump.xz'
@@ -100,7 +100,7 @@ steps:
       docker exec tutor_local_mysql_1 mysqldump --all-databases |xz > mysql_dump_demo.xz
     displayName: 'Generate demo database'
 
-  - task: PublishPipelineArtifact@0
+  - task: PublishBuildArtifacts@1
     inputs:
       artifactName: 'Mysql demo dump'
       targetPath: 'mysql_dump_demo.xz'
