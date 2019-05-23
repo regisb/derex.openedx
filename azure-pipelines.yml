@@ -12,8 +12,6 @@ steps:
     env:
       DOCKER_USERNAME: $(DOCKER_USERNAME)
       DOCKER_PASSWORD: $(DOCKER_PASSWORD)
-      TRANSIFEX_USERNAME: $(TRANSIFEX_USERNAME)
-      TRANSIFEX_PASSWORD: $(TRANSIFEX_PASSWORD)
 
   - script: docker pull derex/buildah
     displayName: 'Pull Buildah image'
@@ -100,9 +98,9 @@ steps:
   - script: |
       set -ex
       docker-compose -f $(tutor config printroot)/env/local/docker-compose.yml --project-name tutor_local \
-        run lms sh -c "echo -e '[https://www.transifex.com]\nhostname=https://www.transifex.com\nusername=${TRANSIFEX_USERNAME}\npassword=${TRANSIFEX_PASSWORD}' >  ~/.transifexrc"
-      docker-compose -f $(tutor config printroot)/env/local/docker-compose.yml --project-name tutor_local \
         run lms sh -c "
+        echo -e '[https://www.transifex.com]\nhostname=https://www.transifex.com\nusername=${TRANSIFEX_USERNAME}\npassword=${TRANSIFEX_PASSWORD}' >  ~/.transifexrc
+        pip install transifex-client
         set -ex
         i18n_tool transifex pull
         i18n_tool extract
@@ -118,6 +116,9 @@ steps:
         python manage.py lms compilejsi18n -v2
         i18n_tool validate"
     displayName: 'Download and compile updated translations from Transifex for LMS'
+    env:
+      TRANSIFEX_USERNAME: $(TRANSIFEX_USERNAME)
+      TRANSIFEX_PASSWORD: $(TRANSIFEX_PASSWORD)
 
   - script: |
       set -ex
